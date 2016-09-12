@@ -1,19 +1,19 @@
-# basebuild-proxy
+# basebuild-proxy-rules
 ===
 
-`basebuild-proxy` is an add-on module to the [node-http-proxy](https://github.com/nodejitsu/node-http-proxy) library. It lets you define a set of rules to translate matching routes to target routes that the reverse proxy service will talk to on the client's behalf.
+`basebuild-proxy-rules` is an add-on module to the [node-http-proxy](https://github.com/nodejitsu/node-http-proxy) library. It lets you define a set of rules to translate matching routes to target routes that the reverse proxy service will talk to on the client's behalf.
 > Based on [http-proxy-rules](https://github.com/donasaur/http-proxy-rules)
 
 ## Installation
 ```sh
-npm install basebuild-proxy --save
+npm install basebuild-proxy-rules --save
 ```
 
 ## Example Use Case
 ```js
   var http = require('http'),
       httpProxy = require('http-proxy'),
-      HttpProxyRules = require('basebuild-proxy');
+      HttpProxyRules = require('basebuild-proxy-rules');
 
   // Set up proxy rules instance
   var proxyRules = new HttpProxyRules({
@@ -45,7 +45,7 @@ npm install basebuild-proxy --save
   }).listen(6010, cb);
 ```
 
-Given the object we used to initialize the `basebuild-proxy` instance above, here are some [**examples**](test/index.tests.js#L38) of how sample url paths would be translated.
+Given the object we used to initialize the `basebuild-proxy-rules` instance above, here are some [**examples**](test/index.tests.js#L38) of how sample url paths would be translated.
 
 ## Options
 
@@ -54,29 +54,29 @@ You can initialize a new instance with the following options:
 ```js
 {
   rules: {
-   
+
     '/prefix1' : { // Rule options
-      removePrefix: true 
+      removePrefix: true
       target: 'http://localhost:9000'
     },
-    
+
     '/prefix2' : 'http://localhost:9001',
   },
-  
+
   // (optional) if no rules matched, translate url path to specified default
-  default: 'http://localhost:8080' 
+  default: 'http://localhost:8080'
 }
 
 ```
 |Option|Type|Description|
 |---|---|---|---|
-rules| `String|Object` | Route mapping of reverse proxy based on `stringPrefix: stringTarget`  or `stringPrefix: {//options}` 
-default| `String` | Default target URL 
+rules| `String|Object` | Route mapping of reverse proxy based on `stringPrefix: stringTarget`  or `stringPrefix: {//options}`
+default| `String` | Default target URL
 
 ### Rule Options
 |Option|Type|Description|Default|
 |---|---|---|---|
-target| 'String' | Target URL 
+target| 'String' | Target URL
 removePrefix | `Boolean` | A flag to remove the key prefix when it resolves the proxy | false
 
 
