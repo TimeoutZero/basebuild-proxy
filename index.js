@@ -28,6 +28,9 @@ HttpProxyRules.prototype.match = function match(req) {
   var urlPrefix;
   var pathEndsWithSlash;
   for (var pathPrefix in rules) {
+    var rule = rules[pathPrefix];
+    var ruleIsAnObject = typeof rule === 'object';
+
     if (rules.hasOwnProperty(pathPrefix)) {
       if (pathPrefix[pathPrefix.length - 1] === '/') {
         pathPrefixRe = new RegExp(pathPrefix);
@@ -39,9 +42,15 @@ HttpProxyRules.prototype.match = function match(req) {
       }
       testPrefixMatch = pathPrefixRe.exec(path);
       if (testPrefixMatch && testPrefixMatch.index === 0) {
-        urlPrefix = pathEndsWithSlash ? testPrefixMatch[0] : testPrefixMatch[1];
-        req.url = path.replace(urlPrefix, '');
-        target = rules[pathPrefix];
+        if(ruleIsAnObject){
+          if(rules[pathPrefix].removePrefix){
+            urlPrefix = pathEndsWithSlash ? testPrefixMatch[0] : testPrefixMatch[1];
+            req.url   = path.replace(urlPrefix, '');
+          }
+          target = rules[pathPrefix].target;
+        } else {
+          target = rules[pathPrefix];
+        }
         break;
       }
     }
