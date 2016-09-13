@@ -76,7 +76,7 @@ default| `String` | Default target URL
 ### Rule Options
 |Option|Type|Description|Default|
 |---|---|---|---|
-target| `String` | Target URL
+target| `String` | Target URL | undefined
 removePrefix | `Boolean` | A flag to remove the key prefix when it resolves the proxy | false
 
 
