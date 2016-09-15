@@ -9,7 +9,7 @@
 npm install basebuild-proxy-rules --save
 ```
 
-## Example Use Case
+## Sever Example
 ```js
   var http = require('http'),
       httpProxy = require('http-proxy'),
