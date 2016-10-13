@@ -14,11 +14,14 @@ function HttpProxyRules(options) {
  * This function will modify the `req` object if a match is found.
  * We also return the new endpoint string if a match is found.
  * @param  {Object} options Takes in a `req` object.
+ * @return {Object} proxySettings
  */
 HttpProxyRules.prototype.match = function match(req) {
   var rules = this.rules;
-  var target = this.default;
   var path = req.url;
+  var proxySettings = {
+    target: this.default
+  };
 
   // go through the proxy rules, assuming keys (path prefixes) are ordered
   // and pick the first target whose path prefix is a prefix of the
@@ -40,23 +43,26 @@ HttpProxyRules.prototype.match = function match(req) {
         pathPrefixRe = new RegExp('(' + pathPrefix + ')' + '(?:\\W|$)');
         pathEndsWithSlash = false;
       }
+
       testPrefixMatch = pathPrefixRe.exec(path);
       if (testPrefixMatch && testPrefixMatch.index === 0) {
         if(ruleIsAnObject){
+
           if(rules[pathPrefix].removePrefix){
             urlPrefix = pathEndsWithSlash ? testPrefixMatch[0] : testPrefixMatch[1];
             req.url   = path.replace(urlPrefix, '');
           }
-          target = rules[pathPrefix].target;
+          proxySettings = rules[pathPrefix];
+
         } else {
-          target = rules[pathPrefix];
+          proxySettings.target = rules[pathPrefix];
         }
         break;
       }
     }
   }
 
-  return target;
+  return proxySettings;
 }
 
 module.exports = HttpProxyRules;
