@@ -26,7 +26,7 @@ HttpProxyRules.prototype.match = function match(req) {
   // go through the proxy rules, assuming keys (path prefixes) are ordered
   // and pick the first target whose path prefix is a prefix of the
   // request url path. RegExp enabled.
-  var pathPrefixRe;
+  var pathPrefixRegexp;
   var testPrefixMatch;
   var urlPrefix;
   var pathEndsWithSlash;
@@ -36,26 +36,27 @@ HttpProxyRules.prototype.match = function match(req) {
 
     if (rules.hasOwnProperty(pathPrefix)) {
       if (pathPrefix[pathPrefix.length - 1] === '/') {
-        pathPrefixRe = new RegExp(pathPrefix);
+        pathPrefixRegexp = new RegExp(pathPrefix);
         pathEndsWithSlash = true;
       } else {
         // match '/test' or '/test/' or './test?' but not '/testing'
-        pathPrefixRe = new RegExp('(' + pathPrefix + ')' + '(?:\\W|$)');
+        pathPrefixRegexp = new RegExp('(' + pathPrefix + ')' + '(?:\\W|$)');
         pathEndsWithSlash = false;
       }
 
-      testPrefixMatch = pathPrefixRe.exec(path);
+      testPrefixMatch = pathPrefixRegexp.exec(path);
       if (testPrefixMatch && testPrefixMatch.index === 0) {
         if(ruleIsAnObject){
+          rule = Object.assign({}, rule);
 
           if(rules[pathPrefix].removePrefix){
             urlPrefix = pathEndsWithSlash ? testPrefixMatch[0] : testPrefixMatch[1];
-            req.url   = path.replace(urlPrefix, '');
+            rule.target += path.replace(urlPrefix, '');
           }
-          proxySettings = rules[pathPrefix];
+          proxySettings = rule;
 
         } else {
-          proxySettings.target = rules[pathPrefix];
+          proxySettings.target = rule;
         }
         break;
       }

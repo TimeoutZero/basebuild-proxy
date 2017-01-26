@@ -9,7 +9,8 @@ module.exports = function spawnReverseProxy(cb) {
   var proxyRules = new HttpProxyRules({
     rules: {
       '.*/test': 'http://localhost:8080/cool', // Rule (1)
-      '.*/test2/': 'http://localhost:8080/cool2/' // Rule (2)
+      '.*/test2/': 'http://localhost:8080/cool2/', // Rule (2)
+      '/remove-prefix': {removePrefix: true, target: 'http://localhost:8080/no-prefix/'}
     },
     default: 'http://localhost:8080' // default target
   });
@@ -23,11 +24,9 @@ module.exports = function spawnReverseProxy(cb) {
 
     // a match method is exposed on the proxy rules instance
     // to test a request to see if it matches against one of the specified rules
-    var target = proxyRules.match(req);
-    if (target) {
-      return proxy.web(req, res, {
-        target: target
-      });
+    var proxySettings = proxyRules.match(req);
+    if (proxySettings.target) {
+      return proxy.web(req, res, proxySettings);
     }
 
     res.writeHead(500, { 'Content-Type': 'text/plain' });

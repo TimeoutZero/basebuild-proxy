@@ -38,35 +38,35 @@ describe('Proxy Routes', function () {
     var urlTranslationTests = [{
         // visited path matches rule (1).
         visitedPath: '/test',
-        newUrlTarget: targetFQDN + targetPort + '/cool'
+        newUrlTarget: targetFQDN + targetPort + '/cool/test'
       }, {
         // visited path matches rule (1).
         // whatever portion is not part of the match is carried over
         // to the new path.
         // in this case, the '/' is carried over.
         visitedPath: '/test/',
-        newUrlTarget: targetFQDN + targetPort + '/cool/'
+        newUrlTarget: targetFQDN + targetPort + '/cool/test/'
       }, {
         // visited path matches rule (1).
         // query parameters are carried over.
         visitedPath: '/test?hi=5/',
-        newUrlTarget: targetFQDN + targetPort + '/cool?hi=5/'
+        newUrlTarget: targetFQDN + targetPort + '/cool/test?hi=5/'
       }, {
         // visited path matches rule (2).
         // the unmatched portion '/yo' is carried over.
         visitedPath: '/test2/yo',
-        newUrlTarget: targetFQDN + targetPort + '/cool2/yo'
+        newUrlTarget: targetFQDN + targetPort + '/cool2/test2/yo'
       }, {
         // visited path matches rule (1).
         // note that the key is interpreted as a regex expression and the
         // module matches against the visited path, and not the entire url.
         visitedPath: '/fuzzyshoe/test',
-        newUrlTarget: targetFQDN + targetPort + '/cool'
+        newUrlTarget: targetFQDN + targetPort + '/cool/fuzzyshoe/test'
       }, {
         // visited path matches rule (1).
         // the unmatched portion '/seven' is carried over.
         visitedPath: '/test/seven',
-        newUrlTarget: targetFQDN + targetPort + '/cool/seven'
+        newUrlTarget: targetFQDN + targetPort + '/cool/test/seven'
       }, {
         // no rule matched, so the module uses the specified default target.
         // the entire visited path is carried over.
@@ -79,17 +79,22 @@ describe('Proxy Routes', function () {
         // the entire visited path is carried over.
         visitedPath: '/testalmost/5',
         newUrlTarget: targetFQDN + targetPort + '/testalmost/5'
+      },
+      {
+        visitedPath: '/remove-prefix',
+        newUrlTarget: targetFQDN + targetPort + '/no-prefix'
       }
+
     ];
 
     // makes a bunch of requests in parallel, and then calls
     // `done` after we receive all responses back
     async.each(urlTranslationTests, function makeRequest(comparisonObj, cb) {
+      console.log('comparisonObj', comparisonObj);
       request({
         url: 'http://127.0.0.1:' + proxyServerPort + comparisonObj.visitedPath,
         json: true
       }, function processResp(err, res, body) {
-
         expect(res.statusCode).to.equal(200);
         expect(targetFQDN + targetPort + body.translatedPath).to.equal(comparisonObj.newUrlTarget);
         cb();

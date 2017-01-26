@@ -1,6 +1,6 @@
 {
   "name": "basebuild-proxy-rules",
-  "version": "1.0.0",
+  "version": "2.0.0-rc",
   "description": "A proxy rules add-on module to the node-http-proxy library supporting multiple proxies",
   "main": "index.js",
   "scripts": {
